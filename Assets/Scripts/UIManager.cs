@@ -3,23 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
-    public static UIManager instance;
-
-    GameObject InfoPanel;
-
-    private void Awake()
-    {
-        if(instance = null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-            SceneManager.sceneLoaded += OnSceneLoaded;
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-    }
+    public GameObject InfoPanel;
 
     public void MainScene()
     {
@@ -39,11 +23,6 @@ public class UIManager : MonoBehaviour
     public void CloseInfo()
     {
         InfoPanel.SetActive(false);
-    }
-
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        InfoPanel = GameObject.Find("Info Panel");
     }
     
 }
