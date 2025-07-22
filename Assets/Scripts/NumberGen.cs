@@ -3,7 +3,21 @@ using UnityEngine;
 
 public class NumberGen : MonoBehaviour
 {
-    class Grid
+
+    public static NumberGen instance;
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+    public class Grid
     {
         public int size;
         public List<List<Num>> grid;
@@ -11,14 +25,14 @@ public class NumberGen : MonoBehaviour
         public List<int> row_sums;
     }
 
-    class Num
+    public class Num
     {
         public int value;
         public bool is_marked;
         public bool is_valid;
     }
 
-    void CreateGrid(int size)
+    public Grid CreateGrid(int size)
     {
         //Init Grid Params
         Grid g = new();
@@ -43,9 +57,9 @@ public class NumberGen : MonoBehaviour
             List<Num> section_2 = Create_Nums(rand_num, size / 2);
 
             List<Num> nums = new List<Num>(section_1);
-            nums.AddRange(section_2);                  
+            nums.AddRange(section_2);
 
-            rows.Add(section_1);
+            rows.Add(nums);
         }
 
         //Set valid numbers randomly
@@ -53,7 +67,7 @@ public class NumberGen : MonoBehaviour
         {
             //init index list
             List<int> indices = new List<int>();
-            for (int i = 0; i < size; i++) indices[i] = i;
+            for (int i = 0; i < size; i++) indices.Add(i);
             Shuffle(indices);
 
             int max_size = ((size + 1) / 2) + 1;
@@ -69,7 +83,7 @@ public class NumberGen : MonoBehaviour
             for (int i = 0; i < valid_count; i++)
             {
                 List<Num> nums = rows[row];
-                Num n = nums[i];
+                Num n = nums[indices[i]];
                 n.is_valid = true;
             }
         }
@@ -110,6 +124,10 @@ public class NumberGen : MonoBehaviour
 
             g.column_sums.Add(sum);
         }
+
+        g.grid = rows;
+
+        return g;
     }
 
     List<Num> Create_Nums(int val, int num_count)
@@ -138,7 +156,7 @@ public class NumberGen : MonoBehaviour
             //Otherwise continue
 
             //add rand_num to our array
-            split_list[i] = rand_num;
+            split_list.Add(rand_num);
 
             //rand_num will become an effective index into our sum as an array.
 
@@ -163,13 +181,13 @@ public class NumberGen : MonoBehaviour
             //ie: if our next split is 18 and our last split was 12, our part is 6
             //since our splits break into sections that total to our sum
             //this ensures that we get a perfect range of numbers that add to our sum
-            parts_list.Add(split_list[i] - last_split);
-            last_split = split_list[i];
+            parts_list.Add(split_list[j] - last_split);
+            last_split = split_list[j];
         }
 
         //our last part is from our last split to our total value
         //ie if our total is 20 and our last split is 17, our last part is 3
-        parts_list[num_count - 1] = val - last_split;
+        parts_list.Add(val - last_split);
 
         for (int p = 0; p < num_count; p++)
         {
